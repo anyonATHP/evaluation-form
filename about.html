@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>陕北民歌人格测试</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #FFD700, #FF4500);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 90%;
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h1 {
+            color: #444;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .question {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        .button {
+            display: block;
+            margin: 10px auto;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 80%;
+            color: white;
+        }
+        .button.a { background: linear-gradient(135deg, #FF69B4, #FF1493); }
+        .button.b { background: linear-gradient(135deg, #FFA500, #FF8C00); }
+        .button.c { background: linear-gradient(135deg, #32CD32, #228B22); }
+        .button:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .hidden {
+            display: none;
+        }
+        #result {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: #222;
+            animation: fadeIn 1s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>陕北民歌人格测试</h1>
+        <div id="quiz">
+            <p id="question" class="question">这里是问题</p>
+            <button class="button a" onclick="answerQuestion('A')">A. 选项A</button>
+            <button class="button b" onclick="answerQuestion('B')">B. 选项B</button>
+            <button class="button c" onclick="answerQuestion('C')">C. 选项C</button>
+        </div>
+        <div id="result" class="hidden"></div>
+    </div>
+
+    <script>
+        const questions = [
+            { text: "在看影视作品时，您更喜欢哪种类型？", a: "情感线丰富的催泪片", b: "普通人的奋斗故事", c: "充满激情的英雄故事" },
+            { text: "以下人物形象您更喜欢哪个？", a: "城市里开小店铺的老板", b: "晋陕两岸摆渡的船夫", c: "山间自由的脚夫" },
+            { text: "您认为自己的性格更接近？", a: "心思细腻", b: "务实诚恳", c: "自由大方" },
+            { text: "以下歌曲种类您更喜欢？", a: "叙事歌曲（比如：韩红的《天亮了》）", b: "律动强的歌曲", c: "山歌" },
+            { text: "以下场景您更喜欢？", a: "城市的人间烟火", b: "黄河的波涛滚滚", c: "山野的层峦耸翠" },
+            { text: "当有人处于不公待遇时，你会？", a: "同情他、理解他", b: "采取实际行动帮助他", c: "观察形式随机应变" },
+            { text: "以下书籍你更喜欢？", a: "《红楼梦》", b: "《水浒传》", c: "《西游记》" },
+            { text: "如果让你选择一种生活，你更向往？", a: "细水长流的安稳日子", b: "在波折中磨砺自己的奋斗人生", c: "自由自在，无拘无束" },
+            { text: "如果你穿越回过去，你更愿意成为？", a: "精打细算的生意人", b: "豪情满怀的绿林好汉", c: "闯荡天涯的游侠" },
+            { text: "在团队中，你更倾向于？", a: "关心他人，维系情感", b: "付诸行动，承担责任", c: "自由行事，不愿受束缚" },
+            { text: "在陕北的黄土地上，你更想体验什么？", a: "在窑洞里听老艺人讲故事", b: "在黄河边放羊、捕鱼、劳作", c: "在山间策马奔腾，感受风的自由" },
+            { text: "如果用一个字形容你的内心世界，你更倾向于？", a: "“柔”——温暖、感性、细腻", b: "“稳”——踏实、可靠、刚毅", c: "“野”——自由、洒脱、无拘束" },
+            { text: "你更喜欢哪种表达方式？", a: "以诗意和情感诉说人生", b: "直截了当地讲道理、讲事实", c: "用幽默、玩笑或行动表达想法" },
+            { text: "你更喜欢哪种传统艺术形式？", a: "细腻动人的秦腔、道情等曲艺", b: "热烈奔放的信天游、民谣", c: "自由自在的号子、劳动歌" },
+            { text: "在你看来，人生最重要的是什么？", a: "亲情和温暖的陪伴", b: "事业和奋斗的价值", c: "追求自我和心灵的自由" },
+            { text: "如果你要去旅行，你会选择？", a: "逛大城市的繁华街道", b: "去黄土高坡感受陕北风情", c: "穿越大山深处，远离喧嚣" },
+            { text: "你更喜欢哪种人与人之间的关系？", a: "细水长流的陪伴", b: "义气当先，相互扶持", c: "各自独立，随时共饮一壶酒" }
+        ];
+
+        let currentQuestion = 0;
+        let scoreA = 0, scoreB = 0, scoreC = 0;
+
+        function answerQuestion(choice) {
+            if (choice === 'A') scoreA++;
+            else if (choice === 'B') scoreB++;
+            else if (choice === 'C') scoreC++;
+
+            currentQuestion++;
+
+            if (currentQuestion < questions.length) {
+                updateQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function updateQuestion() {
+            let q = questions[currentQuestion];
+            document.getElementById("question").innerText = q.text;
+            document.querySelector(".button.a").innerText = "A. " + q.a;
+            document.querySelector(".button.b").innerText = "B. " + q.b;
+            document.querySelector(".button.c").innerText = "C. " + q.c;
+        }
+
+        function showResult() {
+            document.getElementById("quiz").classList.add("hidden");
+            let resultText = "测试结果：";
+            if (scoreA > scoreB && scoreA > scoreC) {
+                resultText += "你适合听 **小调** 🎶（细腻、感性）";
+            } else if (scoreB > scoreA && scoreB > scoreC) {
+                resultText += "你适合听 **号子** 🛶（豪情、务实）";
+            } else {
+                resultText += "你适合听 **信天游** 🎵（自由、洒脱）";
+            }
+
+            resultText += `（A:${scoreA} B:${scoreB} C:${scoreC}）`;
+
+            document.getElementById("result").innerText = resultText;
+            document.getElementById("result").classList.remove("hidden");
+        }
+
+        // 初始化第一个问题
+        updateQuestion();
+    </script>
+</body>
+</html>
