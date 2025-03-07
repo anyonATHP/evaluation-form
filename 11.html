@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>民主测评表</title>
+<style>
+    body { font-family: Arial, sans-serif; background-color: #f0f0f0; margin: 0; padding: 20px; }
+    h2 { text-align: center; }
+    table { margin: 20px auto; border-collapse: collapse; width: 80%; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    th { background-color: #f2f2f2; }
+    .submit-btn { display: block; margin: 20px auto; padding: 10px 20px; }
+</style>
+</head>
+<body>
+<h2>民主测评表</h2>
+<form id="evaluation-form">
+<table>
+    <tr>
+        <th>姓名</th>
+        <th>优秀</th>
+        <th>合格</th>
+        <th>基本合格</th>
+        <th>不合格</th>
+    </tr>
+    <script>
+        const names = ["钟晶瑶","杨璐齐", "梁小楼", "李表澄", "周忠治", "梅浩然", "何源", "吴子傲","钱笑寒", "叶鹏程", "杨元一", "许李源", "李泽裕", "韦增吉","张勐旗", "李乐孝", "辛芃霖", "侯昕睿", "陶宇轩", "马泽轩", "张文攀","许子恒", "房熙越", "刘润钦", "王一然", "张未艾", "王文韬", "梁鼎"];
+        if (!localStorage.getItem('results')) {
+            const initialResults = {};
+            names.forEach(name => {
+                initialResults[name] = { "优秀": 0, "合格": 0, "基本合格": 0, "不合格": 0 };
+            });
+            localStorage.setItem('results', JSON.stringify(initialResults));
+        }
+        names.forEach(name => {
+            document.write(`<tr>
+                <td>${name}</td>
+                <td><input type="radio" name="${name}" value="优秀" required></td>
+                <td><input type="radio" name="${name}" value="合格" required></td>
+                <td><input type="radio" name="${name}" value="基本合格" required></td>
+                <td><input type="radio" name="${name}" value="不合格" required></td>
+            </tr>`);
+        });
+    </script>
+</table>
+<button type="button" class="submit-btn" onclick="submitEvaluation()">提交测评</button>
+</form>
+<div id="result"></div>
+<script>
+    function submitEvaluation() {
+        const form = document.getElementById('evaluation-form');
+        const formData = new FormData(form);
+        const results = JSON.parse(localStorage.getItem('results'));
+        formData.forEach((value, key) => {
+            results[key][value] += 1;
+        });
+        localStorage.setItem('results', JSON.stringify(results));
+        displayResults();
+        alert('测评提交成功！');
+    }
+
+    function displayResults() {
+        const results = JSON.parse(localStorage.getItem('results'));
+        let resultHTML = '<h3>统计结果</h3><table border="1"><tr><th>姓名</th><th>优秀</th><th>合格</th><th>基本合格</th><th>不合格</th></tr>';
+        for (const [name, data] of Object.entries(results)) {
+            resultHTML += `<tr><td>${name}</td><td>${data['优秀']}</td><td>${data['合格']}</td><td>${data['基本合格']}</td><td>${data['不合格']}</td></tr>`;
+        }
+        resultHTML += '</table>';
+        document.getElementById('result').innerHTML = resultHTML;
+    }
+
+    window.onload = displayResults;
+</script>
+</body>
+</html>
+
+
